@@ -30,10 +30,21 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+
+
+    listOf(
+        macosArm64(),
+        macosX64(),
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { apple ->
+        apple.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
+        apple.binaries.executable()
+    }
     
     jvm()
 

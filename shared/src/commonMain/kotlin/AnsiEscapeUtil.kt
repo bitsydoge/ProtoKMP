@@ -23,7 +23,10 @@ internal object AnsiEscapeUtil {
     const val UNDERLINE = "\u001B[4m"
     const val REVERSED = "\u001B[7m"
 
-    fun colorize(text: String, color: String, background: String = "", bold: Boolean = false, underline: Boolean = false, reversed: Boolean = false): String {
+    fun colorize(text: String, color: String, background: String = "", bold: Boolean = false, underline: Boolean = false, reversed: Boolean = false, disable: Boolean = false): String {
+        if (disable)
+            return text
+
         val style = StringBuilder()
         if (bold) style.append(BOLD)
         if (underline) style.append(UNDERLINE)

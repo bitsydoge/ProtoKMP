@@ -1,1 +1,1 @@
-actual fun log(tag: String, message: String, logLevel: Log) = logPrintln(tag, message, logLevel)
+actual fun log(tag: String, message: String, logLevel: LogLevels) = logPrintln(tag, message, logLevel, true)

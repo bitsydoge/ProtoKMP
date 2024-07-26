@@ -1,10 +1,14 @@
 import android.util.Log
-import Log as LogEnum
+import LogLevels as LogEnum
 
 actual fun log(tag: String, message: String, logLevel: LogEnum) {
+    val formatedTag = getRandomEmoji(tag) + " " + tag
     when (logLevel) {
-        LogEnum.Info -> Log.i(tag, message)
-        LogEnum.Warning -> Log.w(tag, message)
-        LogEnum.Error -> Log.e(tag, message)
+        LogEnum.Verbose -> Log.v(formatedTag, message)
+        LogEnum.Debug -> Log.d(formatedTag, message)
+        LogEnum.Info -> Log.i(formatedTag, message)
+        LogEnum.Warning -> Log.w(formatedTag, message)
+        LogEnum.Error -> Log.e(formatedTag, message)
+        LogEnum.Assert -> Log.wtf(formatedTag, message)
     }
 }

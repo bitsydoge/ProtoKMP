@@ -1,4 +1,3 @@
-import AnsiEscapeUtil.BOLD
 import AnsiEscapeUtil.colorize
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -6,73 +5,71 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.absoluteValue
 
-enum class Log {
-    Info,
-    Warning,
-    Error
+enum class LogLevels(val setup: LogSetup) {
+    Verbose(LogSetup(AnsiEscapeUtil.PURPLE, "🟪")),
+    Debug(LogSetup(AnsiEscapeUtil.BLUE, "🟦")),
+    Info(LogSetup(AnsiEscapeUtil.RESET, "⬜")),
+    Warning(LogSetup(AnsiEscapeUtil.YELLOW, "🟨")),
+    Error(LogSetup(AnsiEscapeUtil.RED,"🟥")),
+    Assert(LogSetup(AnsiEscapeUtil.RED,"🆘"))
 }
+
+data class LogSetup(val color : String, val emoji : String)
 
 fun getCurrentTimestamp(): Instant {
     return Clock.System.now()
 }
 
-expect fun log(tag: String = "Default", message: String, logLevel: Log = Log.Info)
+expect fun log(tag: String = "Default", message: String, logLevel: LogLevels = LogLevels.Info)
 
-val color = mapOf(
-    Log.Info to AnsiEscapeUtil.RESET,
-    Log.Warning to AnsiEscapeUtil.YELLOW,
-    Log.Error to AnsiEscapeUtil.RED
-)
 fun formatTimestampForLogging(instant: Instant): String {
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${localDateTime.date} ${localDateTime.time}"
+    return "${localDateTime.time}"
 }
 
-val timestamp = getCurrentTimestamp()
-val formattedTimestamp = formatTimestampForLogging(timestamp)
+fun getTimestamp() = formatTimestampForLogging(getCurrentTimestamp()).take(13).padEnd(13)
+fun getFormatedTag(tag: String) = "${getRandomEmoji(tag)} ${tag.take(21).padEnd(21)}"
 
-val colorPalette = listOf(
-    AnsiEscapeUtil.RED,
-    AnsiEscapeUtil.GREEN,
-    AnsiEscapeUtil.BLUE,
-    AnsiEscapeUtil.YELLOW,
-    AnsiEscapeUtil.PURPLE,
-    AnsiEscapeUtil.CYAN,
-    AnsiEscapeUtil.WHITE
-)
-
-fun getTrueColorForTag(tag: String): String {
-    val hash = tag.hashCode().absoluteValue
-    val r = (hash % 256)
-    val g = ((hash / 256) % 256)
-    val b = ((hash / (256 * 256)) % 256)
-    return "\u001B[38;2;$r;$g;$b;m"
-}
-fun getColorForTag(tag: String): String {
-    // Hash the tag and map it to a color palette index
-    val index = tag.hashCode().absoluteValue % colorPalette.size
-    return colorPalette[index]
-}
 // Extended list of shape emojis
 val emojis = listOf(
-    "🟧", "🟨", "🟩", "🟦", "🟪", "🟫", "⬜",
-    "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚪",
-    "🧡", "💛", "💚", "💙", "💜", "🤎", "🤍"
+    "🐶", // Dog
+    "🐱", // Cat
+    "🐭", // Mouse
+    "🐹", // Hamster
+    "🐰", // Rabbit
+    "🦊", // Fish
+    "🐸", // Frog
+    "🐵", // Monkey
+    "🦄", // Unicorn
+    "🐼", // Panda
+    "🦁", // Lion
+    "🐯", // Tiger
+    "🐨", // Koala
+    "🦒", // Giraffe
+    "🐧", // Penguin
+    "🐦", // Bird
+    "🦉", // Owl
+    "🦘", // Kangaroo
+    "🐴", // Horse
+    "🦃", // Turkey
+    "🦔"  // Hedgehog
 )
 
-// Function to get a random emoji with an offset based on the current time
+// Get Random Emoji with a Tag, the emoji will always be the same for the same tag during app life.
+val offset = (Clock.System.now().toEpochMilliseconds() / 1000).toInt() % emojis.size
 fun getRandomEmoji(tag: String): String {
     val hash = tag.hashCode().absoluteValue
     val index = (hash + offset) % emojis.size
     return emojis[index]
 }
 
-// Function to get the current time-based offset
-val offset = (Clock.System.now().toEpochMilliseconds() / 1000).toInt() % emojis.size
+internal fun logPrintln(tag: String = "Default", message: String, logLevel: LogLevels = LogLevels.Info, colored : Boolean = true) {
+    var formatedLogLevel = logLevel.setup.emoji + " " + logLevel.name.uppercase().take(1) + " " + logLevel.setup.emoji
+    val formatedTag = getFormatedTag(tag)
 
-internal fun logPrintln(tag: String = "Default", message: String, logLevel: Log = Log.Info) {
-    val formatedLogLevel = colorize(logLevel.name.uppercase().take(7).padEnd(7, ' '), color[logLevel]!!, bold = true)
-    val emoji = getRandomEmoji(tag)
-    val formatedTag = colorize("$emoji ${tag.take(16).padEnd(16, '.')} $emoji", BOLD, bold = true)
-    println("${formattedTimestamp.take(22).padEnd(22)} | $formatedLogLevel | $formatedTag | $message")
+    if (colored) {
+        formatedLogLevel = "| " + colorize(logLevel.name.uppercase().padEnd(7), logLevel.setup.color, bold = true) + " |"
+    }
+
+    println("${getTimestamp()} $formatedTag $formatedLogLevel $message")
 }
