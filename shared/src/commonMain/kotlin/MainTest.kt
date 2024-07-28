@@ -1,4 +1,8 @@
 fun main() {
+    mainLibTest()
+}
+
+fun mainLibTest() {
     //language=JSON
     val dummyJson : String = """
         {

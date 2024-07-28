@@ -23,8 +23,7 @@ import protokmp.composeapp.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
-    main()
-
+    mainLibTest()
 
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }

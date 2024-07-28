@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BUILD: Lib (MingwX64)" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="BUILD: Lib (MingwX64)" type="GradleRunConfiguration" factoryName="Gradle" folderName="Build">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/shared" />
